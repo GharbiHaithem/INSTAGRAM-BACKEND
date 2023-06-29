@@ -9,7 +9,7 @@ const cors = require('cors')
 const mongoose = require('mongoose')
 const PORT = process.env.PORT || 5000;
 const bodyParser = require('body-parser');
-
+const fs = require('fs');
 app.use(cors({
     origin:process.env.BASE_URL_FRONT,
    
