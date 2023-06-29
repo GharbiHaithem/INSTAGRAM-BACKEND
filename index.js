@@ -30,6 +30,21 @@ mongoose.connect(process.env.MONGO_URI,
 }).catch((err)=>{
     console.log(`error connexion in database ${err}`)
 })
+const directory = 'public/images/products';
+if (!fs.existsSync(directory)) {
+  fs.mkdirSync(directory, { recursive: true });
+}
+
+
+const filePath = 'public/images/products';
+fs.writeFile(filePath, '', function(err) {
+    if (err) {
+        console.log('Impossible de créer le fichier.');
+    } else {
+        console.log('Le fichier a été créé avec succès.');
+    }
+});
+
 app.use('/api',authRoute)
 app.use('/api',postRoute)
 app.use('/api',uploadRoute)
