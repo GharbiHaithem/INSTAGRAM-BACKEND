@@ -1,9 +1,9 @@
 const express = require('express')
 const router = express.Router()
 const {authMiddleware} = require('../config/authMiddware')
-const {createPost,getAllPosts,likePost,dislikePost} = require('../controller/postCtrl')
+const {deletePost,createPost,getAllPosts,likeDislikePost} = require('../controller/postCtrl')
 router.post('/create/post',authMiddleware,createPost)
 router.get('/getAllPosts',getAllPosts)
-router.put('/like/post/:id',authMiddleware,likePost)
-router.put('/dislike/post/:id',authMiddleware,dislikePost)
+router.put('/likedislike/post/:id',authMiddleware,likeDislikePost)
+router.delete('/delete/post/:id',authMiddleware,deletePost)
 module.exports = router

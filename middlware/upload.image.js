@@ -33,6 +33,7 @@ const productImgResize = async(req,res,next)=>{
     if(!req.files) return next()
     await Promise.all(
         req.files.map(async(file)=>{
+            
             await sharp(file.path)
             .toFormat('jpg').toFormat('avif').toFormat('gif')
             .resize(300,300)

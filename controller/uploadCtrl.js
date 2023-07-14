@@ -5,13 +5,16 @@ const uploadImageCtrl = {
 
         try {
          const uploader = (path)=>cloudinarUploadImg(path,'images')
+     
          const urls=[]
          const files = req.files
-         console.log(files)
+         console.log({files:files})
          for(const file of files){
            const {path} = file
            const newPath = await uploader(path)
+console.log({"newPath":newPath})
            urls.push(newPath)
+           console.log({url:urls})
            fs.unlinkSync(path)
          }
          const images = urls.map((file)=>file) 

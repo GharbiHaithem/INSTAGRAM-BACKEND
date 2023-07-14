@@ -13,7 +13,12 @@ lastname:{
 mobile:String, 
   email:String,
   password:String,
-  pic:{
+  pic:[{
+    public_id:String,
+    url:String,
+
+}],
+  couverture:{
     type:String,
     default:""
   },
@@ -28,6 +33,8 @@ mobile:String,
 passwordChangedAt:Date,
 passwordResetToken:String,
 passwordResetExpires:Date,
+followers:[{type:mongoose.Schema.Types.ObjectId,ref:'User'}],
+following:[{type:mongoose.Schema.Types.ObjectId,ref:'User'}]
   
 },{
   timestamps:true

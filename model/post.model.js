@@ -9,10 +9,16 @@ const PostModel =new mongoose.Schema({
     public_id:String,
     url:String
 }],
+videos:[{
+    public_id:String,
+    url:String
+}],
  postedBy:{type:mongoose.Schema.Types.ObjectId,ref:'User'}
 ,
-likes:[{type:mongoose.Types.ObjectId,ref:'user'}],
+likes:[{type:mongoose.Schema.Types.ObjectId,ref:'User'}],
+comments:[{type:mongoose.Schema.Types.ObjectId,ref:'Comment'}],
 },
+
 {
     timestamps:true
 })
