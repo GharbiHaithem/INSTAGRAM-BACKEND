@@ -19,7 +19,7 @@ const messageRoute = require('./route/message.route')
 const server = http.createServer(app);
 const io = socketIO(server, {
     cors: {
-      origin: 'http://localhost:3000', // Remplacez par l'URL de votre client
+      origin: 'https://social-media-acjn.onrender.com', // Remplacez par l'URL de votre client
       methods: ['GET', 'POST'],
     },
   });
