@@ -49,7 +49,7 @@ const directory = 'public/images/products';
 if (!fs.existsSync(directory)) {
   fs.mkdirSync(directory, { recursive: true });
 }
-const directory1 = 'public/images/videos';
+const directory1 = 'public/videos';
 if (!fs.existsSync(directory1)) {
   fs.mkdirSync(directory, { recursive: true });
 }
