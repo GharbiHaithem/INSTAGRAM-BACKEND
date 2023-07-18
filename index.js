@@ -17,6 +17,7 @@ const socketIO = require('socket.io');
 const chatRoute = require('./route/chat.route')
 const messageRoute = require('./route/message.route')
 const server = http.createServer(app);
+const path = require('path')
 const io = socketIO(server, {
     cors: {
       origin: 'https://social-media-acjn.onrender.com', // Remplacez par l'URL de votre client
@@ -45,24 +46,37 @@ mongoose.connect(process.env.MONGO_URI,
 }).catch((err)=>{
     console.log(`error connexion in database ${err}`)
 })
-const directory = 'public/images/products';
+const directory = path.join(__dirname,'public/images/products');
 if (!fs.existsSync(directory)) {
   fs.mkdirSync(directory, { recursive: true });
 }
-const directory1 = 'public/videos';
+const directory1 = path.join(__dirname, 'public/videos');
 if (!fs.existsSync(directory1)) {
   fs.mkdirSync(directory, { recursive: true });
 }
-let onlineUser = []
-const addUser = (userId,socketId)=>{
-  !onlineUser.some((user)=>user.userId === userId) &&
-  onlineUser.push({
-    userId,socketId
-  })
-}
-const removeUser=(socketId)=>{
-return onlineUser = onlineUser.filter((user)=>user.socketId !== socketId)
-}
+const onlineUser = [];
+
+const addUser = (userId, socketId) => {
+  // Vérifier si l'utilisateur n'est pas null et n'est pas déjà présent dans la liste
+  if (userId && !onlineUser.some((user) => user.userId === userId)) {
+    console.log("Ajout de l'utilisateur :", userId, socketId);
+    onlineUser.push({ userId, socketId });
+    io.emit('userListUpdated', onlineUser); // Émettre un événement personnalisé aux clients pour indiquer que la liste a été mise à jour.
+  } else {
+    console.log("L'utilisateur est déjà présent dans la liste ou l'ID de l'utilisateur est null :", userId, socketId);
+  }
+};
+const removeUser = (socketId) => {
+  console.log("Suppression de l'utilisateur avec socketId :", socketId);
+  const disconnectedUserIndex = onlineUser.findIndex((user) => user.socketId === socketId);
+  if (disconnectedUserIndex !== -1) {
+    const disconnectedUser = onlineUser.splice(disconnectedUserIndex, 1)[0];
+    io.emit('userListUpdated', onlineUser); // Émettre un événement personnalisé aux clients pour indiquer que la liste a été mise à jour.
+    return disconnectedUser;
+  }
+  return null;
+};
+
 const getuser = (userId) => {
   console.log("Recherche de l'utilisateur :", userId);
   const user = onlineUser.find((user) => user.userId === userId);
@@ -71,10 +85,22 @@ const getuser = (userId) => {
 };
 
 io.on('connection', (socket) => {
-socket.on("adduser",((userId)=>{
-  addUser(userId,socket.id)
-  console.log(onlineUser)
-}))
+  socket.on("adduser", (userId) => {
+    addUser(userId, socket.id);
+    console.log(onlineUser);
+    io.emit('userListUpdated', onlineUser);
+  });
+
+  socket.on('disconnect', () => {
+    const socketId = socket.id;
+    const disconnectedUser = removeUser(socketId);
+    if (disconnectedUser) {
+      console.log("Utilisateur déconnecté :", disconnectedUser.userId);
+    } else {
+      console.log("Utilisateur non trouvé :", socketId);
+    }
+  });
+socket.emit('useronline', onlineUser);
 socket.emit('get-users',onlineUser)
 // socket.on("sendNotification",({senderName,receivedName,type,datenotif})=>{
 //   console.log(onlineUser)
@@ -154,13 +180,12 @@ socket.on('like-dislike',(data)=>{
 
   });
    
-  
-  
+
   
 })
   });
 
-const filePath = 'public/videos';
+const filePath = path.join(__dirname,'public/videos');
 fs.writeFile(filePath, '', function(err) {
     if (err) {
         console.log('Impossible de créer le fichier.');

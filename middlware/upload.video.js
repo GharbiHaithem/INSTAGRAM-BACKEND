@@ -5,7 +5,7 @@ const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const ffmpeg = require('fluent-ffmpeg');
 ffmpeg.setFfmpegPath(ffmpegPath);
 
-const uploadDestination ='public/videos';
+const uploadDestination =process.env.UPLOAD_VIDEO_DESTINATION || 'public/videos';
 const multerStorage = multer.diskStorage({
     destination:function(req,file,cb){
 // cb(null,path.join(__dirname,'../public/images'))
@@ -45,9 +45,19 @@ const videoResizeMiddleware = (req, res, next) => {
           const outputPath = `${file.destination}/resized_${file.filename}`;
       console.log(inputPath)
       console.log(outputPath)
+      const compressionOptions = [
+        '-c:v libx264', // Utiliser le codec vidéo libx264
+        '-crf 28', // Facteur de qualité (28 est une valeur de référence, ajustez selon vos besoins)
+        '-preset slow', // Présentation de compression (ajustez selon vos besoins)
+        '-c:a aac', // Utiliser le codec audio AAC
+        '-b:a 128k', // Débit audio (ajustez selon vos besoins)
+      ];
+      
           // Utilisez fluent-ffmpeg pour redimensionner la vidéo
           ffmpeg(inputPath)
+          .outputOptions(compressionOptions)
           .size('1768x720')
+          
             .output(outputPath)
             .on('end', () => {
               // Mettez à jour le chemin du fichier pour la suite de la manipulation

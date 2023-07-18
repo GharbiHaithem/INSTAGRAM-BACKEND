@@ -29,22 +29,21 @@ const uploadPhoto = multer({
    
 })
 const productImgResize = async(req,res,next)=>{
-  try{
-    if(!req.files) return next()
-    await Promise.all(
-        req.files.map(async(file)=>{
-            
-            await sharp(file.path)
-            .toFormat('jpg').toFormat('avif').toFormat('gif')
-            .resize(300,300)
-            .toFile(`${uploadDestination}/products/${file.filename}`)
-            fs.unlinkSync(`${uploadDestination}/products/${file.filename}`)
-        })
-    )
-    next()
-  }catch(err){
- console.log(err)
-  }
+    try{
+        if(!req.files) return next()
+        await Promise.all(
+            req.files.map(async(file)=>{
+                await sharp(file.path)
+                .toFormat('jpg').toFormat('avif').toFormat('gif')
+                .resize(300,300)
+                .toFile(`${uploadDestination}/products/${file.filename}`)
+                fs.unlinkSync(`${uploadDestination}/products/${file.filename}`)
+            })
+        )
+        next()
+      }catch(err){
+     console.log(err)
+      }
 }
 const blogImgResize = async(req,res,next)=>{
     if(!req.files) return next()
